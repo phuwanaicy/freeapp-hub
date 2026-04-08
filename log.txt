@@ -1,0 +1,1 @@
+{"ip":"127.0.0.1","license_key":"DEMO-49FC-927F-86F8","device_id":"T1RQfE1hY0ludGVsfDMyfDEyfDM4NDB4MjE2MHxBc2lhL0Jhbmdrb2t8ZW4tVVN8MTc3NTQ5NDExOQ","ua":"Mozilla\/5.0 (Macintosh; Intel Mac OS X 11_6_0) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/122.0.1055.130 Safari\/537.36","used":4,"updated":1775650546}

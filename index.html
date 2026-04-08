@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FreeApp HUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   FREEAPP HUB — Purple Void Theme
+   ═══════════════════════════════════════════════════ */
+:root{
+  --void:    #05030f;
+  --deep:    #0c0820;
+  --surface: #110d28;
+  --card:    rgba(255,255,255,.04);
+  --card-h:  rgba(139,92,246,.10);
+  --purple:  #8b5cf6;
+  --violet:  #7c3aed;
+  --pink:    #ec4899;
+  --cyan:    #22d3ee;
+  --text:    #f1eeff;
+  --dim:     rgba(241,238,255,.45);
+  --border:  rgba(139,92,246,.20);
+  --glow:    0 0 30px rgba(139,92,246,.35), 0 0 60px rgba(139,92,246,.12);
+  --grad:    linear-gradient(135deg,#8b5cf6,#ec4899);
+  --grad2:   linear-gradient(135deg,#7c3aed,#4f46e5);
+  --mono:    'JetBrains Mono',monospace;
+  --sans:    'Space Grotesk',sans-serif;
+  --display: 'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--void);color:var(--text);font-family:var(--sans)}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--deep)}
+::-webkit-scrollbar-thumb{background:var(--purple);border-radius:4px}
+
+/* ── Canvas background ── */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55}
+
+/* ── Layout ── */
+.app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+
+/* ══════════════════════════
+   HEADER
+══════════════════════════ */
+header{
+  padding:18px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,3,15,.75);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 1px 0 rgba(139,92,246,.12),0 8px 32px rgba(0,0,0,.4);
+  position:sticky;top:0;z-index:100;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 20px rgba(139,92,246,.5);
+  position:relative;overflow:hidden;
+}
+.brand-icon::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.25) 0%,transparent 60%);
+}
+.brand-icon svg{z-index:1;position:relative}
+.brand-name{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.4px;color:#fff}
+.brand-name span{
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.brand-tag{font-family:var(--mono);font-size:9px;color:var(--purple);letter-spacing:3px;text-transform:uppercase;margin-top:1px;opacity:.8}
+
+.header-right{display:flex;align-items:center;gap:12px}
+.status-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 14px;
+  background:rgba(139,92,246,.08);
+  border:1px solid rgba(139,92,246,.22);
+  border-radius:20px;font-size:12px;color:var(--dim);
+}
+.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e;animation:blink 2s infinite}
+.dot.idle{background:#6b7280;box-shadow:none;animation:none}
+.dot.loading{background:var(--purple);box-shadow:0 0 8px var(--purple);animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ══════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════ */
+main{flex:1;padding:32px;max-width:980px;margin:0 auto;width:100%}
+
+/* ── Section headings ── */
+.section-title{
+  font-family:var(--display);font-size:13px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;
+  color:var(--purple);margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ══════════════════════════
+   SCREENS
+══════════════════════════ */
+.screen{display:none;animation:fadeUp .4s ease both}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── Init / Loading screen ─── */
+#screen-init{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:20px;text-align:center}
+.init-icon{
+  width:72px;height:72px;border-radius:20px;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--glow);
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.init-title{font-family:var(--display);font-size:28px;font-weight:800;letter-spacing:-.5px}
+.init-sub{font-size:13px;color:var(--dim);margin-top:4px}
+.init-progress{
+  width:240px;height:3px;background:rgba(139,92,246,.15);
+  border-radius:4px;overflow:hidden;
+}
+.init-bar{
+  height:100%;background:var(--grad);border-radius:4px;
+  animation:progress 2s ease infinite;
+  transform-origin:left;
+}
+@keyframes progress{0%{width:0%;margin-left:0}50%{width:70%}100%{width:0%;margin-left:100%}}
+.init-step{font-family:var(--mono);font-size:11px;color:var(--purple);letter-spacing:1px;height:18px}
+
+/* ─── App Grid ─── */
+.app-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:16px;
+}
+.app-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;padding:20px 14px;
+  display:flex;flex-direction:column;align-items:center;gap:11px;
+  cursor:pointer;
+  transition:all .3s cubic-bezier(.175,.885,.32,1.275);
+  position:relative;overflow:hidden;
+}
+.app-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,rgba(139,92,246,.15),transparent 65%);
+  opacity:0;transition:opacity .3s;
+}
+.app-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  border-color:var(--purple);
+  background:var(--card-h);
+  box-shadow:0 12px 32px rgba(0,0,0,.4),0 0 20px rgba(139,92,246,.15);
+}
+.app-card:hover::before{opacity:1}
+.app-card.locked{opacity:.45;cursor:not-allowed;filter:grayscale(.5)}
+.app-icon{
+  width:62px;height:62px;border-radius:14px;
+  background:#000;border:1px solid rgba(255,255,255,.08);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+.app-icon img{width:100%;height:100%;object-fit:cover}
+.app-name{font-size:12px;font-weight:600;color:var(--dim);text-align:center;line-height:1.4;transition:color .3s}
+.app-card:hover .app-name{color:#fff}
+.lock-tag{
+  position:absolute;top:8px;right:8px;
+  background:var(--grad2);
+  font-family:var(--mono);font-size:7px;font-weight:700;color:#fff;
+  padding:2px 6px;border-radius:6px;letter-spacing:.5px;
+}
+
+/* ─── Server list ─── */
+.back-btn{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.08);
+  border:1px solid var(--border);
+  border-radius:10px;padding:8px 16px;
+  color:var(--dim);font-size:12px;cursor:pointer;
+  transition:all .2s;margin-bottom:24px;width:fit-content;
+}
+.back-btn:hover{background:rgba(139,92,246,.15);border-color:var(--purple);color:#fff}
+
+.server-list{display:flex;flex-direction:column;gap:10px}
+.server-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;
+  transition:all .3s cubic-bezier(.175,.885,.32,1.275);
+  position:relative;overflow:hidden;
+}
+.server-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--grad);border-radius:3px 0 0 3px;
+  transform:scaleY(0);transition:transform .3s;
+}
+.server-card:hover{
+  transform:translateX(6px);
+  border-color:var(--purple);
+  background:var(--card-h);
+}
+.server-card:hover::before{transform:scaleY(1)}
+.server-card.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.server-left{display:flex;align-items:center;gap:14px}
+.server-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.server-dot.online{background:#22c55e;box-shadow:0 0 10px #22c55e;animation:blink 2s infinite}
+.server-dot.offline{background:#ef4444;box-shadow:0 0 10px #ef4444}
+.server-name{font-size:15px;font-weight:600;color:#fff}
+.server-meta{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:3px}
+.server-badge{
+  background:rgba(139,92,246,.12);
+  border:1px solid rgba(139,92,246,.25);
+  color:var(--purple);
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  padding:4px 10px;border-radius:8px;letter-spacing:1px;
+}
+.server-badge.lock{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);color:#f87171}
+.server-arrow{color:var(--purple);opacity:.5;transition:all .3s}
+.server-card:hover .server-arrow{opacity:1;transform:translateX(4px)}
+
+/* ─── Cookie result ─── */
+.result-box{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+}
+.result-header{
+  padding:16px 20px;
+  background:rgba(139,92,246,.08);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.result-title{font-family:var(--display);font-size:14px;font-weight:700;color:#fff}
+.result-actions{display:flex;gap:8px}
+.btn-action{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:9px;
+  font-size:12px;font-weight:600;cursor:pointer;border:none;
+  transition:all .2s;
+}
+.btn-copy{background:rgba(139,92,246,.15);border:1px solid var(--border);color:var(--purple)}
+.btn-copy:hover{background:rgba(139,92,246,.28);border-color:var(--purple)}
+.btn-download{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(139,92,246,.35)}
+.btn-download:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.cookie-output{
+  font-family:var(--mono);font-size:11px;color:#c4b5fd;
+  padding:20px;max-height:340px;overflow-y:auto;
+  line-height:1.7;white-space:pre-wrap;word-break:break-all;
+}
+.result-footer{
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.result-count{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.btn-new{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;padding:7px 14px;
+  color:var(--dim);font-size:12px;cursor:pointer;transition:all .2s;
+}
+.btn-new:hover{border-color:var(--purple);color:#fff}
+
+/* ── Toast ── */
+#toast-wrap{
+  position:fixed;top:20px;right:20px;z-index:9999;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none;
+}
+.toast{
+  background:rgba(12,8,32,.95);
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(20px);
+  border-radius:12px;padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;min-width:190px;max-width:260px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) forwards,
+            toastOut .3s 2.8s ease forwards;
+}
+.toast.success{border-left:3px solid #22c55e}
+.toast.error  {border-left:3px solid #ef4444}
+.toast.warn   {border-left:3px solid var(--purple)}
+@keyframes toastIn {from{opacity:0;transform:translateX(110%)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
+
+/* ══════════════════════════
+   VPN ALERT MODAL
+══════════════════════════ */
+#vpn-overlay{
+  position:fixed;inset:0;z-index:99999;
+  background:rgba(0,0,0,.82);
+  backdrop-filter:blur(10px);
+  display:none;align-items:center;justify-content:center;
+}
+#vpn-overlay.show{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#vpn-box{
+  width:320px;
+  background:linear-gradient(160deg,#0d0a22,#110d2e);
+  border:1px solid rgba(139,92,246,.30);
+  border-radius:24px;
+  padding:32px 28px 26px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  box-shadow:0 0 60px rgba(139,92,246,.18),0 30px 80px rgba(0,0,0,.7);
+  animation:vpnPop .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes vpnPop{from{opacity:0;transform:translateY(22px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.vpn-ring{
+  width:70px;height:70px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.08));
+  border:1.5px solid rgba(139,92,246,.40);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 28px rgba(139,92,246,.25);
+}
+.vpn-title{font-family:var(--display);font-size:18px;font-weight:800;color:#fff;text-align:center}
+.vpn-sub{font-size:12px;color:var(--dim);text-align:center;line-height:1.65}
+.vpn-badge{
+  background:rgba(139,92,246,.10);
+  border:1px solid rgba(139,92,246,.25);
+  border-radius:11px;padding:10px 18px;
+  font-size:12px;color:#c4b5fd;width:100%;text-align:center;line-height:1.5;
+}
+.vpn-steps{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.vpn-step{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;padding:10px 14px;
+}
+.vpn-num{
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(139,92,246,.18);
+  border:1px solid rgba(139,92,246,.35);
+  color:#a78bfa;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:var(--mono);
+}
+.vpn-step span{font-size:11px;color:rgba(255,255,255,.6)}
+.vpn-btn{
+  width:100%;margin-top:4px;
+  padding:13px;border-radius:14px;border:none;cursor:pointer;
+  background:var(--grad);
+  color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px;
+  box-shadow:0 4px 22px rgba(139,92,246,.40);
+  transition:all .2s;font-family:var(--sans);
+}
+.vpn-btn:hover{filter:brightness(1.08);transform:scale(.99)}
+
+/* ══════════════════════════
+   LOADING SPINNER
+══════════════════════════ */
+.spin-wrap{display:flex;align-items:center;justify-content:center;padding:60px}
+.spinner{
+  width:42px;height:42px;
+  border:2.5px solid rgba(139,92,246,.15);
+  border-top:2.5px solid var(--purple);
+  border-radius:50%;animation:spin 1s linear infinite;
+}
+@keyframes spin{100%{transform:rotate(360deg)}}
+
+/* ── Misc ── */
+.mt8{margin-top:8px}
+.empty{text-align:center;padding:48px;color:var(--dim);font-size:13px}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div id="toast-wrap"></div>
+
+<!-- VPN Alert Modal — fullscreen, ปิดด้วย refresh เท่านั้น -->
+<div id="vpn-overlay">
+  <div id="vpn-box">
+    <div class="vpn-ring">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div class="vpn-title" id="vpn-modal-title">ตรวจพบเครื่องซ้ำ</div>
+    <div class="vpn-sub"   id="vpn-modal-sub">กำลังตรวจสอบ...</div>
+    <div class="vpn-badge" id="vpn-modal-badge">🛡️ โปรดเปิด VPN</div>
+    <div class="vpn-steps" id="vpn-modal-steps"></div>
+    <button class="vpn-btn" id="vpn-close-btn">🔄 รีเฟรชหลังเปิด VPN</button>
+  </div>
+</div>
+
+<div class="app">
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Free<span>App</span> HUB</div>
+        <div class="brand-tag">Secure Access Platform</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-pill">
+        <div class="dot idle" id="status-dot"></div>
+        <span id="status-text">กำลังเริ่มต้น...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Screen: Init / Loading -->
+    <div id="screen-init" class="screen active">
+      <div class="init-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="init-title">FreeApp HUB</div>
+        <div class="init-sub">กำลังเชื่อมต่อระบบ...</div>
+      </div>
+      <div class="init-progress"><div class="init-bar"></div></div>
+      <div class="init-step" id="init-step-text">⬡ Generating device fingerprint...</div>
+    </div>
+
+    <!-- Screen: App List -->
+    <div id="screen-apps" class="screen">
+      <div class="section-title">เลือกแอปพลิเคชัน</div>
+      <div class="app-grid" id="app-grid"></div>
+    </div>
+
+    <!-- Screen: Server List -->
+    <div id="screen-servers" class="screen">
+      <button class="back-btn" onclick="goBack('apps')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        กลับไปเลือกแอป
+      </button>
+      <div class="section-title" id="servers-title">เลือกเซิร์ฟเวอร์</div>
+      <div id="server-list-wrap">
+        <div class="spin-wrap"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Screen: Cookie Result -->
+    <div id="screen-result" class="screen">
+      <button class="back-btn" onclick="goBack('servers')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        กลับไปเลือกเซิร์ฟเวอร์
+      </button>
+      <div class="section-title">ผลลัพธ์ — Cookie Data</div>
+      <div class="result-box">
+        <div class="result-header">
+          <div class="result-title" id="result-title">Cookie</div>
+          <div class="result-actions">
+            <button class="btn-action btn-copy" onclick="copyCookie()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              คัดลอก
+            </button>
+            <button class="btn-action btn-download" onclick="downloadCookie()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              ดาวน์โหลด .json
+            </button>
+          </div>
+        </div>
+        <div class="cookie-output" id="cookie-output"></div>
+        <div class="result-footer">
+          <div class="result-count" id="result-count"></div>
+          <button class="btn-new" onclick="goBack('apps')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+            เลือกแอปใหม่
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   FREEAPP HUB — Frontend Logic
+═══════════════════════════════════════════════════ */
+
+// ── State ──────────────────────────────────────────
+const S = {
+  deviceId:   '',
+  userAgent:  '',
+  licenseKey: '',
+  csrfToken:  '',
+  apps:       [],
+  currentApp: null,
+  nodes:      [],
+  currentNode:null,
+  cookies:    [],
+  used:       0,
+  limit:      5,
+};
+
+// ── Canvas animated background ─────────────────────
+(function initCanvas(){
+  const c  = document.getElementById('bg-canvas');
+  const cx = c.getContext('2d');
+  let W,H,particles=[];
+  function resize(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  resize(); window.addEventListener('resize',resize);
+  function mkP(){ return {x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.3,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,col:Math.random()>.6?`rgba(139,92,246,${.4+Math.random()*.4})`:Math.random()>.5?`rgba(236,72,153,${.3+Math.random()*.3})`:`rgba(34,211,238,${.25+Math.random()*.3})`}; }
+  for(let i=0;i<90;i++) particles.push(mkP());
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+      cx.beginPath(); cx.arc(p.x,p.y,p.r,0,Math.PI*2); cx.fillStyle=p.col; cx.fill();
+    });
+    for(let i=0;i<particles.length;i++) for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){ cx.beginPath(); cx.moveTo(particles[i].x,particles[i].y); cx.lineTo(particles[j].x,particles[j].y); cx.strokeStyle=`rgba(139,92,246,${(1-d/100)*.08})`; cx.lineWidth=.6; cx.stroke(); }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── API call ───────────────────────────────────────
+async function api(action, body={}){
+  const res = await fetch(`api.php?action=${action}`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-device-id':S.deviceId,'x-license-key':S.licenseKey,'x-csrf-token':S.csrfToken},
+    body:JSON.stringify(body),
+  });
+  const t = res.headers.get('x-csrf-token');
+  if(t) S.csrfToken=t;
+  return res.json();
+}
+
+// ── UI Helpers ─────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+function setStatus(text,state=''){
+  document.getElementById('status-text').textContent=text;
+  document.getElementById('status-dot').className='dot '+(state||'');
+}
+function setInitStep(t){ document.getElementById('init-step-text').textContent=t; }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toast(msg,type='warn'){
+  const w=document.getElementById('toast-wrap'),el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span style="font-size:14px">${{success:'✓',error:'✕',warn:'⚠'}[type]||'·'}</span><span>${msg}</span>`;
+  w.appendChild(el); setTimeout(()=>el.remove(),3400);
+}
+
+function updateUsageStatus(){
+  const rem = S.limit - S.used;
+  setStatus(`DEMO · ${S.used}/${S.limit} ครั้ง · เหลือ ${rem} ครั้ง`);
+  document.getElementById('status-dot').className='dot'+(rem<=1?' loading':'');
+}
+
+// ── VPN Modal (fullscreen, ปิดไม่ได้ถ้า blocked=true) ─
+function showVpn(mode='duplicate'){
+  // mode: 'duplicate' | 'exhausted'
+  const overlay = document.getElementById('vpn-overlay');
+  const title   = document.getElementById('vpn-modal-title');
+  const sub     = document.getElementById('vpn-modal-sub');
+  const badge   = document.getElementById('vpn-modal-badge');
+  const steps   = document.getElementById('vpn-modal-steps');
+  const closeBtn= document.getElementById('vpn-close-btn');
+
+  if(mode==='exhausted'){
+    title.textContent  = 'ใช้งานครบ 5 ครั้งแล้ว';
+    sub.innerHTML      = 'สิทธิ์ทดลองใช้งานของ IP นี้หมดแล้ว<br>โปรดเปิด VPN เพื่อรับสิทธิ์ใหม่';
+    badge.textContent  = '🔒 IP ของคุณถูกบันทึกครบโควต้า';
+    steps.innerHTML    = `
+      <div class="vpn-step"><div class="vpn-num">1</div><span>เปิดแอป VPN บนอุปกรณ์ของคุณ</span></div>
+      <div class="vpn-step"><div class="vpn-num">2</div><span>เชื่อมต่อ Server ต่างประเทศ (IP ใหม่)</span></div>
+      <div class="vpn-step"><div class="vpn-num">3</div><span>รีเฟรชหน้าเว็บเพื่อรับสิทธิ์ใหม่</span></div>`;
+    closeBtn.textContent = '🔄 รีเฟรชหลังเปิด VPN';
+    closeBtn.onclick = ()=>location.reload();
+  } else {
+    title.textContent  = 'ตรวจพบเครื่องซ้ำ';
+    sub.innerHTML      = 'IP หรือ Device นี้เคยรับสิทธิ์ไปแล้ว<br>โปรดเปิด VPN เพื่อใช้งาน';
+    badge.textContent  = '🛡️ เปลี่ยน IP เพื่อรับสิทธิ์ใหม่';
+    steps.innerHTML    = `
+      <div class="vpn-step"><div class="vpn-num">1</div><span>เปิดแอป VPN บนอุปกรณ์ของคุณ</span></div>
+      <div class="vpn-step"><div class="vpn-num">2</div><span>เลือก Server ต่างประเทศ แล้วเชื่อมต่อ</span></div>
+      <div class="vpn-step"><div class="vpn-num">3</div><span>รีเฟรชหน้าเว็บแล้วลองใหม่</span></div>`;
+    closeBtn.textContent = '🔄 รีเฟรชหลังเปิด VPN';
+    closeBtn.onclick = ()=>location.reload();
+  }
+
+  overlay.classList.add('show');
+  // ปิด click-outside เสมอ (บังคับให้เปิด VPN จริง)
+}
+
+// ── Init — check session first ─────────────────────
+async function init(){
+  showScreen('init');
+  setStatus('กำลังเริ่มต้น...','loading');
+  setInitStep('⬡ Checking session...');
+  await sleep(200);
+
+  // ── Step 1: เช็ค session เก่าจาก IP ──────────────
+  const sessRes = await api('check_session',{});
+
+  if(sessRes.success){
+    // มี session → ใช้ได้เลย ไม่ต้อง login ใหม่
+    S.licenseKey = sessRes.license_key;
+    S.deviceId   = sessRes.device_id;
+    S.userAgent  = sessRes.ua||'';
+    S.used       = sessRes.used||0;
+    S.limit      = 5;
+
+    setInitStep('⬡ Session found — loading apps...');
+    await goLogin(true); // login เพื่อดึง apps
+    return;
+  }
+
+  if(sessRes.exhausted){
+    // IP ใช้ครบแล้ว
+    showVpn('exhausted');
+    setInitStep('⚠ Quota exhausted for this IP');
+    setStatus('ใช้งานครบแล้ว','idle');
+    return;
+  }
+
+  // ── Step 2: ไม่มี session → สร้าง demo key ใหม่ ──
+  setInitStep('⬡ Generating fingerprint & requesting key...');
+  await sleep(300);
+
+  const demoRes = await api('create_demo',{});
+
+  if(!demoRes.success){
+    // ตรวจจับ duplicate ทั้ง flag + message ภาษาไทย
+    const msg = demoRes.message||'';
+    const isDup = demoRes.duplicate
+               || msg.includes('เคย') || msg.includes('ซ้ำ')
+               || msg.includes('ไปแล้ว') || msg.includes('already')
+               || msg.includes('duplicate') || msg.includes('demo')
+               || msg.includes('ทดลอง') || msg.includes('รับสิทธิ์');
+
+    if(isDup){
+      showVpn('duplicate');
+      setInitStep('⚠ Duplicate detected — Open VPN');
+      setStatus('ตรวจพบเครื่องซ้ำ','idle');
+    } else {
+      setInitStep('✕ '+(msg||'Unknown error'));
+      setStatus('เชื่อมต่อไม่ได้','idle');
+      toast(msg||'ไม่สามารถขอสิทธิ์ได้','error');
+    }
+    return;
+  }
+
+  S.licenseKey = demoRes.license_key;
+  S.deviceId   = demoRes.device_id;
+  S.userAgent  = demoRes.ua||'';
+  S.used       = demoRes.used||0;
+  S.limit      = 5;
+
+  await goLogin(false);
+}
+
+// ── Login & fetch apps ─────────────────────────────
+async function goLogin(fromSession){
+  setInitStep(`⬡ ${fromSession?'Restoring session':'Authenticating'}...`);
+
+  const loginRes = await api('login',{
+    license_key: S.licenseKey,
+    device_id:   S.deviceId,
+    ua:          S.userAgent,
+  });
+
+  if(!loginRes.success){
+    setInitStep('✕ Login failed');
+    setStatus('Login ล้มเหลว','idle');
+    toast('Login ไม่สำเร็จ','error');
+    return;
+  }
+
+  S.apps  = loginRes.apps||[];
+  S.used  = loginRes.used_today||S.used;
+  S.limit = loginRes.daily_limit||5;
+
+  setInitStep('✓ Ready!');
+  await sleep(200);
+  updateUsageStatus();
+  renderApps();
+}
+
+// ── Render App Grid ────────────────────────────────
+function renderApps(){
+  showScreen('apps');
+  const grid = document.getElementById('app-grid');
+  const all  = [...S.apps.filter(a=>!a.is_locked), ...S.apps.filter(a=>a.is_locked)];
+  if(!all.length){ grid.innerHTML='<div class="empty">ไม่พบแอปพลิเคชัน</div>'; return; }
+  grid.innerHTML = all.map((app,i)=>`
+    <div class="app-card${app.is_locked?' locked':''}" style="animation-delay:${i*.04}s"
+         onclick="${app.is_locked?`toast('กรุณาอัปเกรดแพ็กเกจ','warn')`:`selectApp(${app.id},'${escHtml(app.name)}')`}">
+      ${app.is_locked?`<div class="lock-tag">${escHtml(app.requirement||'LOCKED')}</div>`:''}
+      <div class="app-icon"><img src="${escHtml(app.icon_url||'')}" onerror="this.style.display='none'" loading="lazy"></div>
+      <div class="app-name">${escHtml(app.name)}</div>
+    </div>`).join('');
+}
+
+// ── Select App ─────────────────────────────────────
+async function selectApp(appId,appName){
+  S.currentApp={id:appId,name:appName};
+  showScreen('servers');
+  document.getElementById('servers-title').textContent=`เซิร์ฟเวอร์ — ${appName}`;
+  document.getElementById('server-list-wrap').innerHTML='<div class="spin-wrap"><div class="spinner"></div></div>';
+  setStatus('กำลังโหลดเซิร์ฟเวอร์...','loading');
+
+  const res = await api('get_nodes',{app_id:appId,license_key:S.licenseKey,device_id:S.deviceId,ua:S.userAgent});
+  updateUsageStatus();
+
+  if(!res.success){
+    document.getElementById('server-list-wrap').innerHTML='<div class="empty">ไม่สามารถโหลดเซิร์ฟเวอร์ได้</div>';
+    toast(res.message||'โหลดเซิร์ฟเวอร์ไม่ได้','error');
+    return;
+  }
+  S.nodes=res.nodes||[];
+  renderServers();
+}
+
+// ── Render Servers ─────────────────────────────────
+function renderServers(){
+  const wrap=document.getElementById('server-list-wrap');
+  if(!S.nodes.length){ wrap.innerHTML='<div class="empty">ไม่พบเซิร์ฟเวอร์</div>'; return; }
+  wrap.innerHTML=S.nodes.map((n,i)=>{
+    const ok=n.is_working,can=n.can_access;
+    return `<div class="server-card${(!ok||!can)?' disabled':''}" style="animation:fadeUp .35s ${i*.06}s ease both"
+         onclick="${ok&&can?`selectServer(${n.id},'${escHtml(n.server_name)}')`:''}">
+      <div class="server-left">
+        <div class="server-dot ${ok?'online':'offline'}"></div>
+        <div><div class="server-name">${escHtml(n.server_name)}</div>
+        <div class="server-meta">${ok?'🟢 ONLINE':'🔴 OFFLINE'} · ${can?'เข้าถึงได้':'ถูกล็อค'}</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="server-badge ${can?'':'lock'}">${escHtml(can?'เข้าได้':n.lock_app||'LOCKED')}</span>
+        <svg class="server-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Select Server → cookie ─────────────────────────
+async function selectServer(nodeId,serverName){
+  S.currentNode={id:nodeId,name:serverName};
+  showScreen('result');
+  document.getElementById('result-title').textContent=`${S.currentApp.name} — ${serverName}`;
+  document.getElementById('cookie-output').textContent='กำลังดึงข้อมูล Cookie...';
+  document.getElementById('result-count').textContent='';
+  setStatus('กำลังดึง Cookie...','loading');
+
+  const res = await api('get_cookie',{node_id:nodeId,license_key:S.licenseKey,device_id:S.deviceId,ua:S.userAgent});
+
+  if(!res.success){
+    document.getElementById('cookie-output').textContent='✕ Error: '+(res.message||'Unknown');
+    toast(res.message||'ดึง Cookie ไม่ได้','error');
+    updateUsageStatus();
+    return;
+  }
+
+  // อัปเดต used
+  S.used = res.used||S.used+1;
+  updateUsageStatus();
+
+  // ถ้าหมด quota → แสดง VPN fullscreen
+  if(res.exhausted){
+    S.cookies=res.cookies||[];
+    const json=JSON.stringify(S.cookies,null,2);
+    document.getElementById('cookie-output').textContent=json;
+    document.getElementById('result-count').textContent=`${S.cookies.length} cookies — ⚠️ ใช้ครบ ${S.limit} ครั้งแล้ว`;
+    toast('ดึง Cookie สำเร็จ! (ครั้งสุดท้าย)','success');
+    // รอให้ download ก่อน แล้วแสดง VPN
+    await sleep(1500);
+    showVpn('exhausted');
+    return;
+  }
+
+  S.cookies=res.cookies||[];
+  const json=JSON.stringify(S.cookies,null,2);
+  document.getElementById('cookie-output').textContent=json;
+  document.getElementById('result-count').textContent=`${S.cookies.length} cookies · เหลืออีก ${res.remaining} ครั้ง`;
+  toast(`ดึง Cookie สำเร็จ! เหลือ ${res.remaining} ครั้ง`,'success');
+}
+
+// ── Back ────────────────────────────────────────────
+function goBack(to){
+  if(to==='apps') renderApps();
+  else showScreen('servers');
+}
+
+// ── Copy / Download ────────────────────────────────
+function copyCookie(){
+  navigator.clipboard.writeText(document.getElementById('cookie-output').textContent)
+    .then(()=>toast('คัดลอกแล้ว!','success'));
+}
+function downloadCookie(){
+  const text=document.getElementById('cookie-output').textContent;
+  const app=(S.currentApp?.name||'app').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  const srv=(S.currentNode?.name||'server').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));
+  a.download=`cookie_${app}_${srv}.json`; a.click();
+  toast('กำลังดาวน์โหลด...','success');
+}
+
+// ── Boot ───────────────────────────────────────────
+init();
+
+// ── Canvas animated background ─────────────────────
+(function initCanvas(){
+  const c  = document.getElementById('bg-canvas');
+  const cx = c.getContext('2d');
+  let W,H,particles=[];
+
+  function resize(){
+    W = c.width  = window.innerWidth;
+    H = c.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function mkP(){
+    return {
+      x: Math.random()*W, y: Math.random()*H,
+      r: Math.random()*1.8+.3,
+      vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.25,
+      a: Math.random(),
+      col: Math.random() > .6
+          ? `rgba(139,92,246,${.4+Math.random()*.4})`
+          : Math.random() > .5
+          ? `rgba(236,72,153,${.3+Math.random()*.3})`
+          : `rgba(34,211,238,${.25+Math.random()*.3})`
+    };
+  }
+  for(let i=0;i<90;i++) particles.push(mkP());
+
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+      cx.beginPath();
+      cx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      cx.fillStyle=p.col;
+      cx.fill();
+    });
+    // draw faint connecting lines
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x;
+        const dy=particles[i].y-particles[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<100){
+          cx.beginPath();
+          cx.moveTo(particles[i].x,particles[i].y);
+          cx.lineTo(particles[j].x,particles[j].y);
+          cx.strokeStyle=`rgba(139,92,246,${(1-d/100)*.08})`;
+          cx.lineWidth=.6;
+          cx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── Fingerprint generator (mirrors otp.py) ─────────
+function generateFingerprint(){
+  const majV = 115 + Math.floor(Math.random()*10);
+  const minV = Math.floor(Math.random()*6000);
+  const patchV= Math.floor(Math.random()*150);
+  const chromeVer = `${majV}.0.${minV}.${patchV}`;
+
+  const platforms = [
+    {p:'Win32',   ua:`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${chromeVer} Safari/537.36`},
+    {p:'MacIntel',ua:`Mozilla/5.0 (Macintosh; Intel Mac OS X 14_3_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${chromeVer} Safari/537.36`},
+    {p:'Linux x86_64',ua:`Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${chromeVer} Safari/537.36`},
+  ];
+  const os  = platforms[Math.floor(Math.random()*platforms.length)];
+  const cpu = [2,4,6,8,10,12,16,24,32][Math.floor(Math.random()*9)];
+  const ram = [4,8,12,16,24,32,64][Math.floor(Math.random()*7)];
+  const res = ['1280x720','1366x768','1920x1080','2560x1440','3840x2160'][Math.floor(Math.random()*5)];
+  const lang= ['th-TH','en-US','en-GB','zh-CN','ja-JP'][Math.floor(Math.random()*5)];
+  const ts  = Math.floor(Date.now()/1000) - Math.floor(Math.random()*600000+3600);
+  const raw = `OTP|${os.p}|${cpu}|${ram}|${res}|Asia/Bangkok|${lang}|${ts}`;
+  const id  = btoa(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  return id;
+}
+
+// ── API call ───────────────────────────────────────
+async function api(action, body={}){
+  const res = await fetch(`api.php?action=${action}`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'x-device-id':   S.deviceId,
+      'x-license-key': S.licenseKey,
+      'x-csrf-token':  S.csrfToken,
+    },
+    body: JSON.stringify(body),
+  });
+  const csrfNew = res.headers.get('x-csrf-token');
+  if(csrfNew) S.csrfToken = csrfNew;
+  return res.json();
+}
+
+// ── UI Helpers ─────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+function setStatus(text, state='idle'){
+  document.getElementById('status-text').textContent = text;
+  const dot = document.getElementById('status-dot');
+  dot.className = 'dot ' + state;
+}
+function setInitStep(text){ document.getElementById('init-step-text').textContent = text; }
+
+function toast(msg, type='warn'){
+  const w   = document.getElementById('toast-wrap');
+  const el  = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icons = {success:'✓',error:'✕',warn:'⚠'};
+  el.innerHTML = `<span style="font-size:14px">${icons[type]||'·'}</span><span>${msg}</span>`;
+  w.appendChild(el);
+  setTimeout(()=>el.remove(), 3400);
+}
+
+function showVpn(){ document.getElementById('vpn-overlay').classList.add('show'); }
+function closeVpn(){ document.getElementById('vpn-overlay').classList.remove('show'); }
+
+// ── Init sequence ──────────────────────────────────
+async function init(){
+  showScreen('init');
+  setStatus('กำลังเริ่มต้น...','loading');
+
+  // Step 1 — PHP สร้าง fingerprint สุ่มและขอ Demo Key ในทีเดียว
+  setInitStep('⬡ Generating random fingerprint & requesting key...');
+  await sleep(350);
+
+  const demoRes = await api('create_demo', {});  // ไม่ต้องส่ง device_id — PHP สร้างเอง
+
+  if(!demoRes.success){
+    if(demoRes.duplicate){
+      showVpn();
+      setInitStep('⚠ Device already registered — Open VPN to continue.');
+      setStatus('ตรวจพบเครื่องซ้ำ','idle');
+      return;
+    }
+    setInitStep('✕ ' + (demoRes.message||'Unknown error'));
+    setStatus('เชื่อมต่อไม่ได้','idle');
+    toast(demoRes.message||'ไม่สามารถขอสิทธิ์ได้','error');
+    return;
+  }
+
+  // รับ device_id + ua + license_key ที่ PHP สร้างสุ่มมาให้ เก็บไว้ใช้ต่อ
+  S.deviceId   = demoRes.device_id;
+  S.userAgent  = demoRes.ua || '';
+  S.licenseKey = demoRes.license_key;
+
+  // Step 2 — Login & get apps (ส่ง device_id+ua ที่ได้มาไปด้วย)
+  setInitStep('⬡ Authenticating & loading apps...');
+  const loginRes = await api('login', {
+    license_key: S.licenseKey,
+    device_id:   S.deviceId,
+    ua:          S.userAgent,
+  });
+
+  if(!loginRes.success){
+    setInitStep('✕ Login failed');
+    setStatus('Login ล้มเหลว','idle');
+    toast('Login ไม่สำเร็จ','error');
+    return;
+  }
+  S.apps = loginRes.apps;
+  setStatus(`${loginRes.package_type} · ${loginRes.used_today}/${loginRes.daily_limit} ครั้ง`, '');
+  document.getElementById('status-dot').className = 'dot';
+
+  setInitStep('✓ Ready!');
+  await sleep(250);
+  renderApps();
+}
+
+// ── Render App Grid ────────────────────────────────
+function renderApps(){
+  showScreen('apps');
+  const grid = document.getElementById('app-grid');
+  const unlocked = S.apps.filter(a=>!a.is_locked);
+  const locked   = S.apps.filter(a=> a.is_locked);
+  const all = [...unlocked, ...locked];
+
+  if(!all.length){
+    grid.innerHTML = '<div class="empty">ไม่พบแอปพลิเคชัน</div>';
+    return;
+  }
+
+  grid.innerHTML = all.map((app,i)=>`
+    <div class="app-card${app.is_locked?' locked':''}"
+         style="animation-delay:${i*.04}s"
+         onclick="${app.is_locked ? `toast('กรุณาอัปเกรดแพ็กเกจ','warn')` : `selectApp(${app.id},'${escHtml(app.name)}')`}">
+      ${app.is_locked ? `<div class="lock-tag">${escHtml(app.requirement||'LOCKED')}</div>` : ''}
+      <div class="app-icon">
+        <img src="${escHtml(app.icon_url||'')}" onerror="this.style.display='none'" loading="lazy">
+      </div>
+      <div class="app-name">${escHtml(app.name)}</div>
+    </div>
+  `).join('');
+}
+
+// ── Select App → load servers ──────────────────────
+async function selectApp(appId, appName){
+  S.currentApp = {id:appId, name:appName};
+  showScreen('servers');
+  document.getElementById('servers-title').textContent = `เซิร์ฟเวอร์ — ${appName}`;
+  document.getElementById('server-list-wrap').innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
+  setStatus('กำลังโหลดเซิร์ฟเวอร์...','loading');
+
+  const res = await api('get_nodes',{app_id:appId, license_key:S.licenseKey, device_id:S.deviceId, ua:S.userAgent});
+  setStatus(document.getElementById('status-text').textContent.replace('กำลังโหลดเซิร์ฟเวอร์...',''),'');
+  document.getElementById('status-dot').className='dot';
+
+  if(!res.success){
+    document.getElementById('server-list-wrap').innerHTML = '<div class="empty">ไม่สามารถโหลดเซิร์ฟเวอร์ได้</div>';
+    toast(res.message||'โหลดเซิร์ฟเวอร์ไม่ได้','error');
+    return;
+  }
+  S.nodes = res.nodes||[];
+  renderServers();
+}
+
+// ── Render Server List ─────────────────────────────
+function renderServers(){
+  const wrap = document.getElementById('server-list-wrap');
+  if(!S.nodes.length){
+    wrap.innerHTML='<div class="empty">ไม่พบเซิร์ฟเวอร์</div>';
+    return;
+  }
+  wrap.innerHTML = S.nodes.map((n,i)=>{
+    const online  = n.is_working;
+    const canUse  = n.can_access;
+    const badgeClass = canUse ? '' : 'lock';
+    const badgeText  = canUse ? 'เข้าได้' : (n.lock_app||'LOCKED');
+    return `
+    <div class="server-card${(!online||!canUse)?' disabled':''}"
+         style="animation:fadeUp .35s ${i*.06}s ease both"
+         onclick="${online&&canUse?`selectServer(${n.id},'${escHtml(n.server_name)}')`:''}">
+      <div class="server-left">
+        <div class="server-dot ${online?'online':'offline'}"></div>
+        <div>
+          <div class="server-name">${escHtml(n.server_name)}</div>
+          <div class="server-meta">${online?'🟢 ONLINE':'🔴 OFFLINE'} · ${canUse?'เข้าถึงได้':'ถูกล็อค'}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="server-badge ${badgeClass}">${escHtml(badgeText)}</span>
+        <svg class="server-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Select Server → fetch cookie ──────────────────
+async function selectServer(nodeId, serverName){
+  S.currentNode = {id:nodeId, name:serverName};
+  showScreen('result');
+  document.getElementById('result-title').textContent = `${S.currentApp.name} — ${serverName}`;
+  document.getElementById('cookie-output').textContent = 'กำลังดึงข้อมูล Cookie...';
+  document.getElementById('result-count').textContent = '';
+  setStatus('กำลังดึง Cookie...','loading');
+
+  const res = await api('get_cookie',{node_id:nodeId, license_key:S.licenseKey, device_id:S.deviceId, ua:S.userAgent});
+  document.getElementById('status-dot').className='dot';
+  setStatus('พร้อมใช้งาน');
+
+  if(!res.success){
+    document.getElementById('cookie-output').textContent = '✕ Error: ' + (res.message||'Unknown');
+    toast(res.message||'ดึง Cookie ไม่ได้','error');
+    return;
+  }
+
+  S.cookies = res.cookies||[];
+  const json = JSON.stringify(S.cookies, null, 2);
+  document.getElementById('cookie-output').textContent = json;
+  document.getElementById('result-count').textContent = `${S.cookies.length} cookies · ${(new Blob([json]).size/1024).toFixed(1)} KB`;
+  toast('ดึง Cookie สำเร็จ!','success');
+}
+
+// ── Back navigation ────────────────────────────────
+function goBack(to){
+  if(to==='apps')    { renderApps(); }
+  else if(to==='servers') { showScreen('servers'); }
+}
+
+// ── Copy cookie ────────────────────────────────────
+function copyCookie(){
+  const text = document.getElementById('cookie-output').textContent;
+  navigator.clipboard.writeText(text).then(()=>toast('คัดลอกแล้ว!','success'));
+}
+
+// ── Download cookie ────────────────────────────────
+function downloadCookie(){
+  const text = document.getElementById('cookie-output').textContent;
+  const app  = (S.currentApp?.name||'app').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  const srv  = (S.currentNode?.name||'server').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  const blob = new Blob([text],{type:'application/json'});
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `cookie_${app}_${srv}.json`;
+  a.click();
+  toast('กำลังดาวน์โหลด...','success');
+}
+
+// ── Utilities ──────────────────────────────────────
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Boot ───────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
