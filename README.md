@@ -27,7 +27,7 @@ freeapp-hub/
 ├── api.php         # Backend — API Proxy + IP Session Manager
 ├── log.txt         # Auto-generated — เก็บ IP Sessions (อย่า commit ไฟล์นี้)
 └── README.md
-└── USAGE.md แนะนำวิธีการใช้งาน
+└── USAGE.md        # แนะนำวิธีการใช้งาน
 ```
 
 ---
