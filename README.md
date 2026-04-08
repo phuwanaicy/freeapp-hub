@@ -46,7 +46,7 @@ freeapp-hub/
 ### วิธีที่ 1 — PHP Built-in Server (Development)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/freeapp-hub.git
+git clone https://github.com/phuwanaicy/freeapp-hub.git
 cd freeapp-hub
 php -S localhost:8000
 ```
